@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "708752516128",
+    "project_id": "myta-a1429",
+    "storage_bucket": "myta-a1429.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:708752516128:android:7b338f07f67105b3a30845",
+        "android_client_info": {
+          "package_name": "com.work.myta"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAFsbIYej2Dcyw-z4ZuKpffRzZ2J_Fr2io"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

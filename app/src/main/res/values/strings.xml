@@ -1,0 +1,9 @@
+<resources>
+    <string name="app_name">Мята</string>
+    <string name="record">Мои запист</string>
+    <string name="recording">Записаться</string>
+    <string name="works">Работы</string>
+    <string name="enter_your_phone_number">Введите номер телефона, указанный при регистарции</string>
+    <string name="please_introduce_yourself">Пожалуйста, представьтесь</string>
+    <string name="my_recording">Моя запись</string>
+</resources>
