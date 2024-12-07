@@ -1,4 +1,4 @@
-package com.work.myta.data
+package com.work.myta.data.dataStorage
 
 import android.content.Context
 import androidx.security.crypto.EncryptedSharedPreferences

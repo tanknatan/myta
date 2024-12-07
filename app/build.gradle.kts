@@ -55,6 +55,12 @@ android {
 
 dependencies {
 
+    implementation("androidx.room:room-runtime:2.6.1")
+    kapt("androidx.room:room-compiler:2.6.1") // Для KAPT
+
+    // Опционально для Coroutines или Flow
+    implementation("androidx.room:room-ktx:2.6.1")
+
     implementation ("androidx.lifecycle:lifecycle-viewmodel-compose:2.5.0")
 
     implementation("androidx.security:security-crypto:1.1.0-alpha06")

@@ -98,7 +98,7 @@ fun NotAuthorizedMainScreen() {
 
 
             loginScreenContent = { LoginScreen(paddingValues, onRegisterClick = {}) },
-            singupScreenContent = { SignUpScreen(paddingValues) },
+            singupScreenContent = { SignUpScreen(paddingValues, onSeccess = {}) },
             notauthorizedScreenContent = {
                 NotAuthorizedScreen(
                     paddingValues,

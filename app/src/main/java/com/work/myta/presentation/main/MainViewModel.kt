@@ -15,16 +15,5 @@ class MainViewModel(
     private val _authState = MutableStateFlow<AuthState>(AuthState.Initial)
     val authState: StateFlow<AuthState> = _authState
 
-    fun checkAuthState() {
-        viewModelScope.launch {
-            _authState.value = authRepository.getAuthState()
-        }
-    }
 
-    fun performAuthResult() {
-        viewModelScope.launch {
-            authRepository.performAuthResult()
-            _authState.value = authRepository.getAuthState()
-        }
-    }
 }

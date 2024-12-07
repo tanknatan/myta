@@ -16,7 +16,9 @@ import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Snackbar
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
@@ -51,21 +53,22 @@ import com.work.myta.ui.theme.ledger_regular_font
 @OptIn(ExperimentalMaterial3Api::class)
 
 @Composable
-fun SignUpScreen(paddingValues: PaddingValues) {
+fun SignUpScreen(paddingValues: PaddingValues,onSeccess:()->Unit) {
 
-    val viewModel: SingUpViewModel = viewModel()
+    val viewModel: SignUpViewModel = viewModel()
     var phone by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
     var name by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
-
+    var verificationCode by remember { mutableStateOf("") } // Локальная переменная для проверки кода
     var isNameError by remember { mutableStateOf(false) }
     var isPhoneError by remember { mutableStateOf(false) }
     var isEmailError by remember { mutableStateOf(false) }
     var isPasswordError by remember { mutableStateOf(false) }
     var isConfirmPasswordError by remember { mutableStateOf(false) }
-
+    var isSnackbarVisible by remember { mutableStateOf(false) } // Для управления отображением Snackbar
+    var generatedCode by remember { mutableStateOf("") } // Для отображения кода
     var showDialog by remember { mutableStateOf(false) }
     var dialogText by remember { mutableStateOf("") }
 
@@ -79,7 +82,7 @@ fun SignUpScreen(paddingValues: PaddingValues) {
     val keyboardController = LocalSoftwareKeyboardController.current
     val focusRequester = LocalFocusManager.current
 
-    val authState by viewModel.authState.observeAsState()
+
 
     Box(
         modifier = Modifier
@@ -189,7 +192,6 @@ fun SignUpScreen(paddingValues: PaddingValues) {
 
             Button(
                 onClick = {
-                    // Проверка заполненности полей и совпадения паролей
                     val isValid = validateInputs(
                         name = name,
                         phone = phone,
@@ -204,10 +206,10 @@ fun SignUpScreen(paddingValues: PaddingValues) {
                     )
 
                     if (isValid) {
-                        Log.d("SingUpScreen", "7"+phone)
-                        // Начать верификацию номера телефона
-                        viewModel.startPhoneNumberVerification("7"+phone)
-                        showDialog = true // Показать диалоговое окно
+                        verificationCode = viewModel.generateVerificationCode() // Генерация кода
+                        println("Сгенерированный код: $verificationCode") // Для отладки (в реальном приложении отправляется через SMS)
+                        showDialog = true // Показ диалогового окна
+                        isSnackbarVisible = true // Показываем Snackbar
                     }
                 },
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xff86C474)),
@@ -222,7 +224,20 @@ fun SignUpScreen(paddingValues: PaddingValues) {
                 )
             }
         }
-
+        if (isSnackbarVisible) {
+            Snackbar(
+                action = {
+                    TextButton(onClick = { isSnackbarVisible = false }) {
+                        Text(text = "Закрыть")
+                    }
+                },
+                modifier = Modifier.align(Alignment.BottomCenter)
+            ) {
+                Log.d(generatedCode.toString(), verificationCode.toString())
+                Text(text = "Ваш код подтверждения: $generatedCode",
+                    color = Color.Red)
+            }
+        }
         // Диалоговое окно для ввода кода
         if (showDialog) {
             AlertDialog(
@@ -242,7 +257,10 @@ fun SignUpScreen(paddingValues: PaddingValues) {
                 },
                 confirmButton = {
                     Button(onClick = {
-                        viewModel.verifyCode(dialogText) // Проверить введенный код
+                        if (dialogText == verificationCode) {
+                            viewModel.saveUserData(name, phone, email, password)
+                            onSeccess()
+                        }
                         showDialog = false
                     }) {
                         Text("Подтвердить")

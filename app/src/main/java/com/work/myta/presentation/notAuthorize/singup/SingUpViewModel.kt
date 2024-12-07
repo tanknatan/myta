@@ -1,8 +1,11 @@
 package com.work.myta.presentation.notAuthorize.singup
 
+import android.app.Application
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.google.firebase.FirebaseException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -10,90 +13,84 @@ import com.google.firebase.auth.PhoneAuthCredential
 import com.google.firebase.auth.PhoneAuthOptions
 import com.google.firebase.auth.PhoneAuthProvider
 import com.google.firebase.auth.PhoneAuthProvider.getCredential
+import com.work.myta.data.dataStorage.DatabaseProvider
+import com.work.myta.data.repository.UserRepository
+import com.work.myta.domain.entity.User
+import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 
-class SingUpViewModel :ViewModel() {
-    private val auth: FirebaseAuth = FirebaseAuth.getInstance()
+class SignUpViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val _authState = MutableLiveData<AuthState>()
-    val authState: LiveData<AuthState> = _authState
+    private val userRepository: UserRepository
+    private var generatedCode: String? = null
 
-    private var verificationId: String? = null
-    private var resendToken: PhoneAuthProvider.ForceResendingToken? = null
+    // LiveData для наблюдения за пользователем
+    private val _user = MutableLiveData<User?>()
+    val user: LiveData<User?> get() = _user
 
-    fun startPhoneNumberVerification(phoneNumber: String) {
-        val options = PhoneAuthOptions.newBuilder(auth)
-            .setPhoneNumber(phoneNumber)
-            .setTimeout(60L, TimeUnit.SECONDS)
-            .setCallbacks(phoneAuthCallbacks)
-            .build()
-
-        PhoneAuthProvider.verifyPhoneNumber(options)
-        _authState.value = AuthState.Loading
+    init {
+        // Получаем доступ к репозиторию
+        val userDao = DatabaseProvider.getDatabase(application).userDao()
+        userRepository = UserRepository(userDao)
     }
 
-    fun verifyCode(code: String) {
-        val currentVerificationId = verificationId
-        if (currentVerificationId != null) {
-            val credential = getCredential(currentVerificationId, code)
-            signInWithPhoneAuthCredential(credential)
-        } else {
-            _authState.value = AuthState.Error("Verification ID is null")
+    /**
+     * Генерация случайного кода подтверждения.
+     */
+    fun generateVerificationCode(): String {
+        val code = (1000..9999).random().toString() // Генерация случайного четырехзначного числа
+        generatedCode = code // Сохраняем код в ViewModel
+        return code
+    }
+
+    /**
+     * Проверка введенного кода.
+     * @param inputCode Код, введенный пользователем.
+     * @return `true`, если коды совпадают, иначе `false`.
+     */
+    fun verifyCode(inputCode: String): Boolean {
+        return inputCode == generatedCode
+    }
+
+    /**
+     * Очистка сгенерированного кода после проверки.
+     */
+    fun clearCode() {
+        generatedCode = null
+    }
+
+    /**
+     * Сохранение данных пользователя в базе данных через репозиторий.
+     */
+    fun saveUserData(name: String, phone: String, email: String, password: String) {
+        viewModelScope.launch {
+            val user = User(name = name, phone = phone, email = email, password = password)
+            userRepository.insert(user)
+            _user.value = user // Обновляем LiveData
         }
     }
 
-    fun resendCode(phoneNumber: String) {
-        val token = resendToken
-        if (token != null) {
-            val options = PhoneAuthOptions.newBuilder(auth)
-                .setPhoneNumber(phoneNumber)
-                .setTimeout(60L, TimeUnit.SECONDS)
-                .setForceResendingToken(token)
-                .setCallbacks(phoneAuthCallbacks)
-                .build()
-
-            PhoneAuthProvider.verifyPhoneNumber(options)
-            _authState.value = AuthState.Loading
-        } else {
-            _authState.value = AuthState.Error("Resend token is null")
-        }
+    /**
+     * Отправка кода подтверждения на телефон.
+     * (В реальном приложении здесь будет код для отправки через SMS)
+     */
+    fun sendVerificationCode(phone: String): String {
+        val verificationCode = generateVerificationCode() // Генерация кода
+        println("Код подтверждения для $phone: $verificationCode") // Логика отправки кода через SMS (заглушка)
+        return verificationCode
     }
 
-    private fun signInWithPhoneAuthCredential(credential: PhoneAuthCredential) {
-        auth.signInWithCredential(credential)
-            .addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    val user = task.result?.user
-                    _authState.value = AuthState.Success(user)
-                } else {
-                    _authState.value = AuthState.Error(task.exception?.message ?: "Unknown error")
-                }
-            }
-    }
-
-    private val phoneAuthCallbacks = object : PhoneAuthProvider.OnVerificationStateChangedCallbacks() {
-        override fun onVerificationCompleted(credential: PhoneAuthCredential) {
-            signInWithPhoneAuthCredential(credential)
+    /**
+     * Получение пользователя по ID из базы данных.
+     */
+    fun getUserById(id: Int): LiveData<User?> {
+        val liveData = MutableLiveData<User?>()
+        viewModelScope.launch {
+            liveData.postValue(userRepository.getUserById(id))
         }
-
-        override fun onVerificationFailed(e: FirebaseException) {
-            _authState.value = AuthState.Error(e.message ?: "Verification failed")
-        }
-
-        override fun onCodeSent(
-            verificationId: String,
-            token: PhoneAuthProvider.ForceResendingToken
-        ) {
-            this@SingUpViewModel.verificationId = verificationId
-            this@SingUpViewModel.resendToken = token
-            _authState.value = AuthState.CodeSent
-        }
+        return liveData
     }
 }
 
-sealed class AuthState {
-    object Loading : AuthState()
-    object CodeSent : AuthState()
-    data class Success(val user: FirebaseUser?) : AuthState()
-    data class Error(val message: String) : AuthState()
-}
+
+
