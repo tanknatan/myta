@@ -234,7 +234,7 @@ fun SignUpScreen(paddingValues: PaddingValues,onSeccess:()->Unit) {
                 modifier = Modifier.align(Alignment.BottomCenter)
             ) {
                 Log.d(generatedCode.toString(), verificationCode.toString())
-                Text(text = "Ваш код подтверждения: $generatedCode",
+                Text(text = "Ваш код подтверждения: $verificationCode",
                     color = Color.Red)
             }
         }

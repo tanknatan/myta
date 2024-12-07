@@ -1,5 +1,6 @@
 package com.work.myta.presentation.notAuthorize.login
 
+import android.widget.Toast
 import androidx.compose.material.icons.Icons
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -51,13 +52,25 @@ import com.work.myta.ui.filterWithMask
 import com.work.myta.ui.theme.ledger_regular_font
 
 import androidx.compose.material3.Text
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
+import androidx.lifecycle.viewmodel.compose.viewModel
+import com.work.myta.presentation.notAuthorize.singup.SignUpViewModel
 
 @Composable
-fun LoginScreen(paddingValues: PaddingValues, onRegisterClick: () -> Unit) {
+fun LoginScreen(
+    paddingValues: PaddingValues,
+    onRegisterClick: () -> Unit,
+
+) {
+    val viewModel: LoginViewModel = viewModel()
     var phone by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    val loginState by viewModel.loginState.observeAsState()
+    val errorMessage by viewModel.errorMessage.observeAsState()
+
     val selectedCountry by remember { mutableStateOf(Country.RUSSIA) }
     val maskVisualTransformation by remember {
         derivedStateOf {
@@ -66,17 +79,16 @@ fun LoginScreen(paddingValues: PaddingValues, onRegisterClick: () -> Unit) {
     }
 
     val keyboardController = LocalSoftwareKeyboardController.current
-
     val focusRequester = LocalFocusManager.current
+
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .padding(paddingValues),
-
-
-        ) {
+            .padding(paddingValues)
+    ) {
         Image(
-            painter = painterResource(id = R.drawable.background), contentDescription = null,
+            painter = painterResource(id = R.drawable.background),
+            contentDescription = null,
             contentScale = ContentScale.FillBounds,
             modifier = Modifier.fillMaxSize()
         )
@@ -85,9 +97,8 @@ fun LoginScreen(paddingValues: PaddingValues, onRegisterClick: () -> Unit) {
                 .fillMaxWidth()
                 .padding(paddingValues = paddingValues),
             verticalArrangement = Arrangement.SpaceBetween,
-            horizontalAlignment = Alignment.CenterHorizontally,
-
-            ) {
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
             Text(
                 text = stringResource(R.string.enter_your_phone_number),
                 fontFamily = ledger_regular_font,
@@ -97,7 +108,6 @@ fun LoginScreen(paddingValues: PaddingValues, onRegisterClick: () -> Unit) {
                 textAlign = TextAlign.Center,
                 fontSize = 20.sp
             )
-
 
             BlueTextField(
                 value = phone,
@@ -111,19 +121,13 @@ fun LoginScreen(paddingValues: PaddingValues, onRegisterClick: () -> Unit) {
                     .padding(bottom = 16.dp),
                 keyboardActions = KeyboardActions(
                     onDone = {
-                        if (phone.checkMask(selectedCountry.phoneMask)) {
-                            // onSendPhone(phone)
-                            keyboardController?.hide()
-                            focusRequester.clearFocus()
-                        }
-                    }),
-                //isError = isError,
+                        keyboardController?.hide()
+                        focusRequester.clearFocus()
+                    }
+                ),
                 visualTransformation = maskVisualTransformation,
                 leadingIcon = {
-                    CountryPicker(
-                        selectedCountry = selectedCountry,
-
-                        )
+                    CountryPicker(selectedCountry = selectedCountry)
                 }
             )
             TextField(
@@ -131,60 +135,54 @@ fun LoginScreen(paddingValues: PaddingValues, onRegisterClick: () -> Unit) {
                 onValueChange = {
                     password = it
                 },
-//                placeholderText = selectedCountry.phoneMask,
                 keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Password),
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 16.dp),
-//                keyboardActions = KeyboardActions(
-//                    onDone = {
-//                        if (phone.checkMask(selectedCountry.phoneMask)) {
-//                            // onSendPhone(phone)
-//                            keyboardController?.hide()
-//                            focusRequester.clearFocus()
-//                        }
-//                    }),
-                //isError = isError,
                 colors = TextFieldDefaults.colors(
-
-
                     disabledTextColor = Color.Transparent,
                     unfocusedTextColor = Color.Transparent,
                     focusedContainerColor = Color.Transparent,
                     unfocusedContainerColor = Color.Transparent,
                     disabledContainerColor = Color.Transparent,
-                    focusedIndicatorColor = Color.Black, // Цвет линии в фокусе
-                    unfocusedIndicatorColor = Color.Gray, // Цвет линии без фокуса
-                    disabledIndicatorColor = Color.LightGray, // Цвет линии, когда поле отключено
-                    errorIndicatorColor = Color.Red // Цвет линии в случае ошибки
-
-
-                ),
-
+                    focusedIndicatorColor = Color.Black,
+                    unfocusedIndicatorColor = Color.Gray,
+                    disabledIndicatorColor = Color.LightGray,
+                    errorIndicatorColor = Color.Red
                 )
+            )
             Button(
                 onClick = {
-                    //onSendPhone("${selectedCountry.dialCode}$phone")
+                    viewModel.checkUserCredentials(phone, password)
                     keyboardController?.hide()
                     focusRequester.clearFocus()
                 },
-                //enabled = !isLoading && phone.checkMask(selectedCountry.phoneMask),
                 colors = ButtonDefaults.buttonColors(containerColor = Color(0xff86C474)),
                 modifier = Modifier
                     .fillMaxWidth(0.8f)
-                    .height(60.dp),
-
-                ) {
+                    .height(60.dp)
+            ) {
                 Text(
                     text = "Войти",
                     fontSize = 30.sp,
                     fontFamily = ledger_regular_font
                 )
+            }
 
+            loginState?.let { isLoggedIn ->
+                if (isLoggedIn) {
+                    // Переход на следующий экран
+                } else {
+                    errorMessage?.let { message ->
+                        Toast.makeText(LocalContext.current, message, Toast.LENGTH_SHORT).show()
+                        viewModel.clearErrorMessage()
+                    }
+                }
             }
         }
     }
 }
+
 
 
 

@@ -12,7 +12,7 @@ class MainViewModel(
     private val authRepository: AppRepository
 ) : ViewModel() {
 
-    private val _authState = MutableStateFlow<AuthState>(AuthState.Initial)
+    private val _authState = MutableStateFlow<AuthState>(AuthState.NotAuthorized)
     val authState: StateFlow<AuthState> = _authState
 
 

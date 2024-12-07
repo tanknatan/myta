@@ -69,11 +69,7 @@ dependencies {
     implementation("com.google.dagger:dagger:2.47")
     kapt("com.google.dagger:dagger-compiler:2.47")
 
-    implementation(platform("com.google.firebase:firebase-bom:33.6.0"))
-    implementation("com.google.firebase:firebase-analytics")
-// Add the dependency for the Firebase Authentication library
-    // When using the BoM, you don't specify versions in Firebase library dependencies
-    implementation("com.google.firebase:firebase-auth")
+
 
 
     implementation("com.google.android.gms:play-services-base:18.5.0")
