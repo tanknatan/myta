@@ -1,14 +1,24 @@
 package com.work.myta.presentation.notAuthorize.login
 
+import android.app.Application
+import android.util.Log
+import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.work.myta.data.dataStorage.DatabaseProvider
 import com.work.myta.data.repository.UserRepository
 import kotlinx.coroutines.launch
 
-class LoginViewModel(private val userRepository: UserRepository) : ViewModel() {
+class LoginViewModel(application: Application) : AndroidViewModel(application) {
 
+    private val userRepository: UserRepository
+    init {
+        // Получаем доступ к репозиторию
+        val userDao = DatabaseProvider.getDatabase(application).userDao()
+        userRepository = UserRepository(userDao)
+    }
     private val _loginState = MutableLiveData<Boolean>()
     val loginState: LiveData<Boolean> get() = _loginState
 
@@ -20,6 +30,7 @@ class LoginViewModel(private val userRepository: UserRepository) : ViewModel() {
             try {
                 val user = userRepository.getUserByPhoneAndPassword(phone, password)
                 if (user != null) {
+                    Log.d("LoginViewModel", "User found: $user")
                     _loginState.value = true
                 } else {
                     _loginState.value = false

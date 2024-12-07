@@ -6,7 +6,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.google.firebase.FirebaseException
+
 
 import com.work.myta.data.dataStorage.DatabaseProvider
 import com.work.myta.data.repository.UserRepository

@@ -1,4 +1,4 @@
-package ru.student.vknewsclient.presentation
+package com.work.myta.presentation.main
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider

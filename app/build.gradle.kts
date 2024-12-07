@@ -1,7 +1,6 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.jetbrains.kotlin.android)
-    id("com.google.gms.google-services")
     id("kotlin-kapt")
 
 
@@ -63,7 +62,7 @@ dependencies {
 
     implementation ("androidx.lifecycle:lifecycle-viewmodel-compose:2.5.0")
 
-    implementation("androidx.security:security-crypto:1.1.0-alpha06")
+   
 
 
     implementation("com.google.dagger:dagger:2.47")
@@ -72,8 +71,7 @@ dependencies {
 
 
 
-    implementation("com.google.android.gms:play-services-base:18.5.0")
-    implementation("com.google.android.gms:play-services-tflite-java:16.2.0-beta02")
+
 
     implementation("androidx.core:core-ktx:1.9.0")
     implementation("androidx.compose.runtime:runtime-livedata:1.7.5")

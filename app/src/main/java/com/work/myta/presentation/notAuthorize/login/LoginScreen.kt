@@ -62,7 +62,7 @@ import com.work.myta.presentation.notAuthorize.singup.SignUpViewModel
 @Composable
 fun LoginScreen(
     paddingValues: PaddingValues,
-    onRegisterClick: () -> Unit,
+    onSeccess: () -> Unit,
 
 ) {
     val viewModel: LoginViewModel = viewModel()
@@ -140,8 +140,7 @@ fun LoginScreen(
                     .fillMaxWidth()
                     .padding(bottom = 16.dp),
                 colors = TextFieldDefaults.colors(
-                    disabledTextColor = Color.Transparent,
-                    unfocusedTextColor = Color.Transparent,
+
                     focusedContainerColor = Color.Transparent,
                     unfocusedContainerColor = Color.Transparent,
                     disabledContainerColor = Color.Transparent,
@@ -171,6 +170,7 @@ fun LoginScreen(
 
             loginState?.let { isLoggedIn ->
                 if (isLoggedIn) {
+                    onSeccess()
                     // Переход на следующий экран
                 } else {
                     errorMessage?.let { message ->

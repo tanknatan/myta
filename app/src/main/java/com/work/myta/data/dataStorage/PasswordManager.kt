@@ -1,29 +1,18 @@
 package com.work.myta.data.dataStorage
 
 import android.content.Context
-import androidx.security.crypto.EncryptedSharedPreferences
-import androidx.security.crypto.MasterKeys
+
 
 
 class PasswordManager(context: Context) {
 
-    private val sharedPreferences = createEncryptedPreferences(context)
+    private val sharedPreferences = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
 
     companion object {
         private const val PREFS_NAME = "user_prefs"
         private const val KEY_PASSWORD = "password"
         private const val KEY_PHONE_NUMBER = "phone_number"
     }
-
-    // Создаем EncryptedSharedPreferences
-    private fun createEncryptedPreferences(context: Context) =
-        EncryptedSharedPreferences.create(
-            PREFS_NAME,
-            MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC),
-            context,
-            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
-            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
-        )
 
     // Сохранение пароля
     fun savePassword(password: String) {
@@ -55,4 +44,5 @@ class PasswordManager(context: Context) {
         sharedPreferences.edit().remove(KEY_PHONE_NUMBER).apply()
     }
 }
+
 
