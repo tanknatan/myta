@@ -2,8 +2,9 @@ package com.work.myta.domain.usecase
 
 import com.work.myta.domain.repository.AppRepository
 
-class GetAuthStateUseCase(
+class LogOutUseCase(
     private val repository: AppRepository
 ) {
-    fun invoke() = repository.getAuthState()
+
+    fun invoke() = repository.logout()
 }

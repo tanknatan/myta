@@ -6,6 +6,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -17,7 +21,8 @@ import com.work.myta.R
 fun WorksScreen(paddingValues: PaddingValues) {
     Box(
         modifier = Modifier
-            .fillMaxSize(),
+            .fillMaxSize()
+            .padding(paddingValues)
         //contentAlignment = Alignment.BottomCenter
 
     ) {
@@ -28,14 +33,35 @@ fun WorksScreen(paddingValues: PaddingValues) {
         )
         Column(
             modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.Center,
+
             horizontalAlignment = Alignment.CenterHorizontally,
 
             ) {
+
+            ScrollableImage()
 
 
         }
 
     }
 
+}
+
+@Composable
+fun ScrollableImage() {
+    // Создаем состояние для прокрутки
+    val scrollState = rememberScrollState()
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize() // Занимает все доступное пространство
+            .verticalScroll(scrollState) // Вертикальная прокрутка
+    ) {
+        Image(
+            painter = painterResource(id = R.drawable.photo),
+            contentDescription = "Scrollable Image",
+            contentScale = ContentScale.FillWidth, // Указывает, как изображение заполняет контейнер
+            modifier = Modifier.fillMaxWidth() // Занимает всю ширину
+        )
+    }
 }

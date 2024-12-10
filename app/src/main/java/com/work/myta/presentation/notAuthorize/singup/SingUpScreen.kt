@@ -192,7 +192,7 @@ fun SignUpScreen(paddingValues: PaddingValues,onSeccess:()->Unit) {
 
             Button(
                 onClick = {
-                    val isValid = validateInputs(
+                    val isValid = viewModel.validateInputs(
                         name = name,
                         phone = phone,
                         email = email,
@@ -279,46 +279,5 @@ fun SignUpScreen(paddingValues: PaddingValues,onSeccess:()->Unit) {
 }
 
 
-// Функция проверки ввода
-private fun validateInputs(
-    name: String,
-    phone: String,
-    email: String,
-    password: String,
-    confirmPassword: String,
-    isNameErrorSetter: (Boolean) -> Unit,
-    isPhoneErrorSetter: (Boolean) -> Unit,
-    isEmailErrorSetter: (Boolean) -> Unit,
-    isPasswordErrorSetter: (Boolean) -> Unit,
-    isConfirmPasswordErrorSetter: (Boolean) -> Unit
-): Boolean {
-    var isValid = true
 
-    if (name.isBlank()) {
-        isNameErrorSetter(true)
-        isValid = false
-    }
-
-    if (phone.isBlank()) {
-        isPhoneErrorSetter(true)
-        isValid = false
-    }
-
-    if (email.isBlank()) {
-        isEmailErrorSetter(true)
-        isValid = false
-    }
-
-    if (password.isBlank()) {
-        isPasswordErrorSetter(true)
-        isValid = false
-    }
-
-    if (confirmPassword.isBlank() || confirmPassword != password) {
-        isConfirmPasswordErrorSetter(true)
-        isValid = false
-    }
-
-    return isValid
-}
 

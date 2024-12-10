@@ -6,4 +6,5 @@
     <string name="enter_your_phone_number">Введите номер телефона, указанный при регистарции</string>
     <string name="please_introduce_yourself">Пожалуйста, представьтесь</string>
     <string name="my_recording">Моя запись</string>
+    <string name="no_records">Вы ещё не записались</string>
 </resources>

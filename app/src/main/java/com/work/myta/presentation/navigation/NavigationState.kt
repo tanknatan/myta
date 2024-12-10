@@ -21,6 +21,14 @@ class NavigationState(
         }
     }
 
+    fun navigateToAppointment(type: String, categoryOrMaster: String) {
+        navHostController.navigate(Screen.AppointmentRoute.createRoute(type, categoryOrMaster))
+    }
+    fun navigateToChoiceDate(appotion : String) {
+        navHostController.navigate(Screen.ChoiceDate.createRoute(appotion))
+    }
+
+
 }
 
 @Composable

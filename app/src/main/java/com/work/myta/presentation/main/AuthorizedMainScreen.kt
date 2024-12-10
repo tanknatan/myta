@@ -20,12 +20,20 @@ import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.work.myta.presentation.authorized.record.RecordScreen
+import com.work.myta.presentation.authorized.recording.AppotionsScreen
+import com.work.myta.presentation.authorized.recording.CategoryScreen
+import com.work.myta.presentation.authorized.recording.ChoiceDateScreen
+import com.work.myta.presentation.authorized.recording.MasterScreen
+import com.work.myta.presentation.authorized.recording.RecordingScreen
+import com.work.myta.presentation.authorized.recording.TypeScreen
 import com.work.myta.presentation.navigation.AppAuthNavGraph
 
 import com.work.myta.presentation.navigation.NavigationItem
 import com.work.myta.presentation.navigation.rememberNavigationState
 import com.work.myta.presentation.authorized.works.WorksScreen
+import com.work.myta.presentation.navigation.Screen
 import com.work.myta.ui.theme.main_app_color
+import com.work.myta.ui.theme.secondary_app_color
 
 @Composable
 fun AuthorizedMainScreen() {
@@ -61,8 +69,8 @@ fun AuthorizedMainScreen() {
                             selectedTextColor = main_app_color,
 
                             //indicatorColor = MaterialTheme.colorScheme.primary,
-                            unselectedIconColor = MaterialTheme.colorScheme.onSecondary,
-                            unselectedTextColor = MaterialTheme.colorScheme.onSecondary
+                            unselectedIconColor = secondary_app_color,
+                            unselectedTextColor = secondary_app_color
                         )
                     )
                 }
@@ -72,10 +80,75 @@ fun AuthorizedMainScreen() {
         AppAuthNavGraph(
             navHostController = navigationState.navHostController,
             worksScreenContent = { WorksScreen(paddingValues = paddingValues) },
-            recordScreenContent = {RecordScreen(paddingValues = paddingValues)},
-            recordingScreenContent = {  },
+            recordScreenContent = { RecordScreen(paddingValues = paddingValues) },
+            recordingScreenContent = {
+                RecordingScreen(
+                    paddingValues = paddingValues,
+                    onAppointmentClick = { navigationState.navigate(Screen.Type.route) },
+                )
+            },
+            categoryScreenContent = {
+                CategoryScreen(
+                    paddingValues = paddingValues,
+                    onManikuryaClick = {
+                        navigationState.navigateToAppointment(
+                            "service",
+                            "Manikurya"
+                        )
+                    },
+                    onPedikuryaClick = {
+                        navigationState.navigateToAppointment(
+                            "service",
+                            "Pedikurya"
+                        )
+                    },
+                    onSaleClick = {
+                        navigationState.navigateToAppointment(
+                            "service", "Sale"
+                        )
+                    })
+            },
+            typeScreenContent = {
+                TypeScreen(
+                    paddingValues = paddingValues,
+                    onMansterClick = { navigationState.navigate(Screen.Master.route) },
+                    onServiceClick = { navigationState.navigate(Screen.Category.route) })
+            },
+            masterScreenContent = {
+                MasterScreen(
+                    paddingValues = paddingValues,
+                    onAnnaClick = { navigationState.navigateToAppointment("Master", "Anna") },
+                    onEkaterinaClick = {
+                        navigationState.navigateToAppointment(
+                            "Master",
+                            "Ekaterina"
+                        )
+                    },
+                    onMariaClick = { navigationState.navigateToAppointment("Master", "Maria") }
+                )
+            },
+            appointmentScreenContent = {
 
+                val backStackEntry = navigationState.navHostController.currentBackStackEntry
+                val type = backStackEntry?.arguments?.getString("type") // Извлекаем аргумент "type"
+                val categoryOrMaster =
+                    backStackEntry?.arguments?.getString("categoryOrMaster") // Извлекаем аргумент "categoryOrMaster"
+                AppotionsScreen(
+                    paddingValues = paddingValues,
+                    type = type,
+                    categoryOrMaster = categoryOrMaster
+                ) { returnedValue ->
+                    navigationState.navigateToChoiceDate(returnedValue)
 
+                }
+            },
+            choiceDateScreenContent = {
+                val backStackEntry = navigationState.navHostController.currentBackStackEntry
+                val appotion =
+                    backStackEntry?.arguments?.getString("appotion") // Извлекаем аргумент "appotion"
+
+                ChoiceDateScreen(appotion!!, paddingValues)
+            }
         )
     }
 }

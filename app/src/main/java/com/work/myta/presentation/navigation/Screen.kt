@@ -14,6 +14,21 @@ sealed class Screen(
     object Login : Screen(ROUTE_LOGIN)
     object SingUp : Screen(ROUTE_SINGUP)
     object NotAuthorized : Screen(ROUTE_NOT_AUTHORIZED)
+    object Category : Screen(ROUTE_CATEGORY)
+    object Type : Screen(ROUTE_TYPE)
+    object Master : Screen(ROUTE_MASTER)
+
+    object AppointmentRoute : Screen("$ROUTE_APPOINTMENT/{type}/{categoryOrMaster}") {
+        fun createRoute(type: String, categoryOrMaster: String): String {
+            return "$ROUTE_APPOINTMENT/$type/$categoryOrMaster"
+        }
+    }
+    object ChoiceDate : Screen("$ROUTE_CHOICE_DATE/{appotion}"){
+        fun createRoute(appotion: String): String {
+            return "$ROUTE_CHOICE_DATE/$appotion"
+        }
+    }
+
 
 
     private companion object {
@@ -23,6 +38,12 @@ sealed class Screen(
         const val ROUTE_LOGIN = "login"
         const val ROUTE_SINGUP = "singup"
         const val ROUTE_NOT_AUTHORIZED = "notAuthorized"
+        const val ROUTE_CATEGORY = "category"
+        const val ROUTE_TYPE = "type"
+        const val ROUTE_MASTER = "master"
+        const val ROUTE_APPOINTMENT = "appointmentTo"
+        const val ROUTE_CHOICE_DATE = "choiceDate"
+
     }
 }
 

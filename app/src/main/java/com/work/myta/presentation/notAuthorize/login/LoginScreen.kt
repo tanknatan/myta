@@ -57,15 +57,16 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.work.myta.presentation.main.MainViewModel
 import com.work.myta.presentation.notAuthorize.singup.SignUpViewModel
 
 @Composable
 fun LoginScreen(
+    viewModel: MainViewModel,
     paddingValues: PaddingValues,
-    onSeccess: () -> Unit,
 
 ) {
-    val viewModel: LoginViewModel = viewModel()
+
     var phone by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     val loginState by viewModel.loginState.observeAsState()
@@ -170,8 +171,7 @@ fun LoginScreen(
 
             loginState?.let { isLoggedIn ->
                 if (isLoggedIn) {
-                    onSeccess()
-                    // Переход на следующий экран
+                    viewModel.saveState(phone, password)
                 } else {
                     errorMessage?.let { message ->
                         Toast.makeText(LocalContext.current, message, Toast.LENGTH_SHORT).show()

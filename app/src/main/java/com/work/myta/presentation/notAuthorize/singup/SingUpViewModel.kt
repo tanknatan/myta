@@ -9,14 +9,14 @@ import androidx.lifecycle.viewModelScope
 
 
 import com.work.myta.data.dataStorage.DatabaseProvider
-import com.work.myta.data.repository.UserRepository
+import com.work.myta.data.repository.AppRepositoryImpl
 import com.work.myta.domain.entity.User
 import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 
 class SignUpViewModel(application: Application) : AndroidViewModel(application) {
 
-    private val userRepository: UserRepository
+    private val userRepository: AppRepositoryImpl
     private var generatedCode: String? = null
 
     // LiveData для наблюдения за пользователем
@@ -26,7 +26,7 @@ class SignUpViewModel(application: Application) : AndroidViewModel(application) 
     init {
         // Получаем доступ к репозиторию
         val userDao = DatabaseProvider.getDatabase(application).userDao()
-        userRepository = UserRepository(userDao)
+        userRepository = com.work.myta.data.repository.AppRepositoryImpl
     }
 
     /**
@@ -81,9 +81,51 @@ class SignUpViewModel(application: Application) : AndroidViewModel(application) 
     fun getUserById(id: Int): LiveData<User?> {
         val liveData = MutableLiveData<User?>()
         viewModelScope.launch {
-            liveData.postValue(userRepository.getUserById(id))
+            liveData.postValue(userRepository.getUserById())
         }
         return liveData
+    }
+    // Функция проверки ввода
+    fun validateInputs(
+        name: String,
+        phone: String,
+        email: String,
+        password: String,
+        confirmPassword: String,
+        isNameErrorSetter: (Boolean) -> Unit,
+        isPhoneErrorSetter: (Boolean) -> Unit,
+        isEmailErrorSetter: (Boolean) -> Unit,
+        isPasswordErrorSetter: (Boolean) -> Unit,
+        isConfirmPasswordErrorSetter: (Boolean) -> Unit
+    ): Boolean {
+        var isValid = true
+
+        if (name.isBlank()) {
+            isNameErrorSetter(true)
+            isValid = false
+        }
+
+        if (phone.isBlank()) {
+            isPhoneErrorSetter(true)
+            isValid = false
+        }
+
+        if (email.isBlank()) {
+            isEmailErrorSetter(true)
+            isValid = false
+        }
+
+        if (password.isBlank()) {
+            isPasswordErrorSetter(true)
+            isValid = false
+        }
+
+        if (confirmPassword.isBlank() || confirmPassword != password) {
+            isConfirmPasswordErrorSetter(true)
+            isValid = false
+        }
+
+        return isValid
     }
 }
 
