@@ -28,6 +28,7 @@ sealed class Screen(
             return "$ROUTE_CHOICE_DATE/$appotion"
         }
     }
+    object CheckYourInformation : Screen(ROUTE_CHECK_YOUR_INFORMATION)
 
 
 
@@ -43,6 +44,7 @@ sealed class Screen(
         const val ROUTE_MASTER = "master"
         const val ROUTE_APPOINTMENT = "appointmentTo"
         const val ROUTE_CHOICE_DATE = "choiceDate"
+        const val ROUTE_CHECK_YOUR_INFORMATION = "checkYourInformation"
 
     }
 }

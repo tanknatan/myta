@@ -17,7 +17,8 @@ fun NavGraphBuilder.recordScreenNavGraph(
     typeScreenContent: @Composable () -> Unit,
     masterScreenContent: @Composable () -> Unit,
     appointmentScreenContent: @Composable () -> Unit,
-    choiceDateScreenContent: @Composable () -> Unit
+    choiceDateScreenContent: @Composable () -> Unit,
+    checkYourInformationScreenContent: @Composable () -> Unit
 ) {
     navigation(
         route = "recordingGraph", // Уникальный маршрут для графа навигации
@@ -40,6 +41,9 @@ fun NavGraphBuilder.recordScreenNavGraph(
         }
         composable(Screen.ChoiceDate.route) {
             choiceDateScreenContent()
+        }
+        composable(Screen.CheckYourInformation.route){
+            checkYourInformationScreenContent()
         }
     }
 }

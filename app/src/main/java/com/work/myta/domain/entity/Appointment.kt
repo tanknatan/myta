@@ -28,7 +28,7 @@ import java.util.Date
 data class Appointment(
     @PrimaryKey(autoGenerate = true)
     val id: Int = 0, // Primary key for Appointment
-    val type: String,
+    val master: String,
     val userId: Int, // Foreign key referencing User.id
     val appointmentDate: String
 )

@@ -1,5 +1,6 @@
 package com.work.myta.presentation.authorized.recording
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -15,7 +16,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -25,9 +25,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.work.myta.R
-import com.work.myta.domain.entity.AnnaData
 import com.work.myta.domain.entity.AppotionData
-import com.work.myta.presentation.main.MainViewModel
+import com.work.myta.presentation.authorized.record.RecordViewModel
 import kotlinx.serialization.encodeToString
 import kotlinx.serialization.json.Json
 
@@ -37,10 +36,11 @@ fun AppotionsScreen(
     paddingValues: PaddingValues,
     type: String?,
     categoryOrMaster: String?,
-    onAppotionClick: (String) -> Unit
+    recordViewModel: RecordViewModel,
+    onAppotionClick: (String) -> Unit,
 ) {
-    val viewModel: RecordingScreenViewModel = viewModel()
-    val serviceCards = viewModel.foundArray(type, categoryOrMaster)
+
+    val serviceCards = recordViewModel.foundArray(type, categoryOrMaster)
 
     Box(
         modifier = Modifier
@@ -59,11 +59,16 @@ fun AppotionsScreen(
             contentPadding = PaddingValues(top = 16.dp)
         ) {
             items(serviceCards) { appotion ->
+
+
                 val serviceJson = Json.encodeToString(appotion)
-                ServiceCardScreen(appotion = appotion, onClick = {onAppotionClick(serviceJson) })
+                ServiceCardScreen(appotion = appotion, onClick = {
+                    recordViewModel.selectAppointment.value = appotion
+                    onAppotionClick(serviceJson)
+                })
+
             }
         }
-
     }
 }
 

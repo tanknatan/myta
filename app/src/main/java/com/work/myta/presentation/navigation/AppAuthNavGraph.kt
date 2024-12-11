@@ -18,7 +18,8 @@ fun AppAuthNavGraph(
     typeScreenContent: @Composable () -> Unit,
     masterScreenContent: @Composable () -> Unit,
     appointmentScreenContent: @Composable () -> Unit,
-    choiceDateScreenContent: @Composable () -> Unit
+    choiceDateScreenContent: @Composable () -> Unit,
+    checkYourInformationScreenContent: @Composable () -> Unit
 
 ) {
     NavHost(navController = navHostController, startDestination = Screen.Record.route) {
@@ -32,6 +33,7 @@ fun AppAuthNavGraph(
             masterScreenContent = masterScreenContent,
             appointmentScreenContent = appointmentScreenContent,
             choiceDateScreenContent = choiceDateScreenContent,
+            checkYourInformationScreenContent = checkYourInformationScreenContent
 
         )
 

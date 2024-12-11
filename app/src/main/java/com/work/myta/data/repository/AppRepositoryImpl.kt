@@ -20,6 +20,7 @@ object AppRepositoryImpl : AppRepository {
         userDao = DatabaseProvider.getDatabase(context).userDao()
         appointmentDao = DatabaseProvider.getDatabase(context).appointmentDao()
     }
+
     private const val KEY_IS_LOGGED_IN = "is_logged_in"
 
 
@@ -38,6 +39,7 @@ object AppRepositoryImpl : AppRepository {
     override fun updateState() {
         TODO("Not yet implemented")
     }
+
     suspend fun insert(user: User) {
         userDao.insert(user)
     }
@@ -52,20 +54,26 @@ object AppRepositoryImpl : AppRepository {
         userDao.delete(user)
     }
 
+    suspend fun insert(appointment: Appointment) {
+        appointmentDao.insert(appointment)
+    }
+
     // Получение пользователя по ID
     suspend fun getUserById(): User {
-        return userDao.getUserById( sharedPreferences.getInt(KEY_IS_LOGGED_IN, 0))
+        return userDao.getUserById(sharedPreferences.getInt(KEY_IS_LOGGED_IN, 0))
     }
+
     suspend fun getUserByPhoneAndPassword(phone: String, password: String): User? {
         return userDao.getUserByPhoneAndPassword(phone, password)
     }
+
     suspend fun getIdByPhoneAndPassword(phone: String, password: String): Int {
-        return userDao.getIdByPhoneAndPassword(phone,password)
+        return userDao.getIdByPhoneAndPassword(phone, password)
     }
+
     suspend fun getAppointmentsByUserId(): List<Appointment> {
         return appointmentDao.getAppointmentsByUserId(sharedPreferences.getInt(KEY_IS_LOGGED_IN, 0))
     }
-
 
 
 }

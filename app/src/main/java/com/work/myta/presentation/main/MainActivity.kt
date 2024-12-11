@@ -13,6 +13,7 @@ import androidx.compose.runtime.remember
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.work.myta.data.repository.AppRepositoryImpl
+import com.work.myta.presentation.authorized.record.RecordViewModel
 import com.work.myta.ui.theme.MytaTheme
 import kotlinx.coroutines.flow.StateFlow
 
@@ -24,17 +25,18 @@ class MainActivity : ComponentActivity() {
         AppRepositoryImpl.initialize(this) // Передаем контекст приложения
         //  viewModel = ViewModelProvider.create(this).get(class:)
         setContent {
-            val viewModel: MainViewModel = viewModel()
-            val logState by viewModel.logState.collectAsState()
+            val recordViewModel: RecordViewModel = viewModel()
+            val mainviewModel: MainViewModel = viewModel()
+            val logState by mainviewModel.logState.collectAsState()
             // Запрашиваем состояние авторизации
             // Отображаем соответствующий экран в зависимости от состояния
             MytaTheme {
                 if (logState > 0){
                     Log.d("MainActivity", "logState: $logState")
-                    AuthorizedMainScreen()
+                    AuthorizedMainScreen(recordViewModel)
                 }else {
                     Log.d("MainActivity", "logState: $logState")
-                    NotAuthorizedMainScreen(viewModel)}
+                    NotAuthorizedMainScreen(mainviewModel)}
 
             }
         }

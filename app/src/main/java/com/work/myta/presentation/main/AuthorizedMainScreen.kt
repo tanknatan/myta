@@ -20,8 +20,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.work.myta.presentation.authorized.record.RecordScreen
+import com.work.myta.presentation.authorized.record.RecordViewModel
 import com.work.myta.presentation.authorized.recording.AppotionsScreen
 import com.work.myta.presentation.authorized.recording.CategoryScreen
+import com.work.myta.presentation.authorized.recording.CheckYourInformationScreen
 import com.work.myta.presentation.authorized.recording.ChoiceDateScreen
 import com.work.myta.presentation.authorized.recording.MasterScreen
 import com.work.myta.presentation.authorized.recording.RecordingScreen
@@ -36,7 +38,7 @@ import com.work.myta.ui.theme.main_app_color
 import com.work.myta.ui.theme.secondary_app_color
 
 @Composable
-fun AuthorizedMainScreen() {
+fun AuthorizedMainScreen(recordViewModel: RecordViewModel) {
     val navigationState = rememberNavigationState()
     Scaffold(
         bottomBar = {
@@ -80,11 +82,17 @@ fun AuthorizedMainScreen() {
         AppAuthNavGraph(
             navHostController = navigationState.navHostController,
             worksScreenContent = { WorksScreen(paddingValues = paddingValues) },
-            recordScreenContent = { RecordScreen(paddingValues = paddingValues) },
+            recordScreenContent = {
+                RecordScreen(
+                    paddingValues = paddingValues,
+                    viewModel = recordViewModel
+                )
+            },
             recordingScreenContent = {
                 RecordingScreen(
                     paddingValues = paddingValues,
                     onAppointmentClick = { navigationState.navigate(Screen.Type.route) },
+                    recordViewModel = recordViewModel
                 )
             },
             categoryScreenContent = {
@@ -136,7 +144,8 @@ fun AuthorizedMainScreen() {
                 AppotionsScreen(
                     paddingValues = paddingValues,
                     type = type,
-                    categoryOrMaster = categoryOrMaster
+                    categoryOrMaster = categoryOrMaster,
+                    recordViewModel = recordViewModel,
                 ) { returnedValue ->
                     navigationState.navigateToChoiceDate(returnedValue)
 
@@ -147,7 +156,10 @@ fun AuthorizedMainScreen() {
                 val appotion =
                     backStackEntry?.arguments?.getString("appotion") // Извлекаем аргумент "appotion"
 
-                ChoiceDateScreen(appotion!!, paddingValues)
+                ChoiceDateScreen(appotion!!, paddingValues, recordViewModel)
+            },
+            checkYourInformationScreenContent = {
+                CheckYourInformationScreen(paddingValues, recordViewModel)
             }
         )
     }

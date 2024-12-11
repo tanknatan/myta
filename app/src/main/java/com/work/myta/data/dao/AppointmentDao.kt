@@ -11,6 +11,8 @@ import java.sql.Date
 
 @Dao
 interface AppointmentDao {
+    @Insert
+    suspend fun insert(appointment: Appointment)
 
     // Insert a new appointment
     @Insert(onConflict = OnConflictStrategy.REPLACE)

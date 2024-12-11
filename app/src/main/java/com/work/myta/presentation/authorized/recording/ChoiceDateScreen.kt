@@ -1,5 +1,6 @@
 package com.work.myta.presentation.authorized.recording
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -13,11 +14,12 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -32,22 +34,25 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.work.myta.R
 import com.work.myta.domain.entity.AppotionData
+import com.work.myta.presentation.authorized.record.RecordViewModel
 import com.work.myta.ui.theme.ledger_regular_font
-import kotlinx.serialization.encodeToString
+import com.work.myta.ui.theme.main_app_color
+import com.work.myta.ui.theme.secondary_app_color
 import kotlinx.serialization.json.Json
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Locale
 
 @Composable
-fun ChoiceDateScreen(appotion: String, paddingValues: PaddingValues) {
+fun ChoiceDateScreen(appotion: String, paddingValues: PaddingValues, recordViewModel: RecordViewModel) {
     val appotionData = Json.decodeFromString<AppotionData>(appotion)
-    var selectedDate by remember { mutableStateOf<Int>(0) }
+
+    val isSelected = remember { mutableStateOf(false) }
+
 
     Box(
         modifier = Modifier
@@ -69,10 +74,10 @@ fun ChoiceDateScreen(appotion: String, paddingValues: PaddingValues) {
                 .padding(16.dp)
 
         ) {
-            HorizontalCalendar(onClick = {day ->
-                selectedDate = day
-
-            })
+            HorizontalCalendar(onClick = { day ->
+                recordViewModel.appointmentDate.value = day
+                isSelected.value = true
+            },recordViewModel = recordViewModel)
             Image(
                 painter = painterResource(id = appotionData.masterResId),
                 contentDescription = null,
@@ -118,42 +123,67 @@ fun ChoiceDateScreen(appotion: String, paddingValues: PaddingValues) {
                 color = Color.Black,
                 modifier = Modifier.align(Alignment.CenterHorizontally),
             )
-            Row(
-                Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceAround
-            ) {
-                Button(onClick = { /*TODO*/ }) {
+            if (isSelected.value) {
+                Row(
+                    Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceAround
+                ) {
+                    Button(
+                        onClick = { recordViewModel.appointmentTime.value = 10 }, colors = ButtonDefaults.buttonColors(Color.White),
+                        modifier = Modifier.width(100.dp),
+                        shape = ButtonDefaults
+                            .shape
+                    ) {
+
+                        Text(text = "10:00", color = Color.Black)
+
+                    }
+                    Button(
+                        onClick = { recordViewModel.appointmentTime.value = 12 }, colors = ButtonDefaults.buttonColors(Color.White),
+                        modifier = Modifier.width(100.dp),
+                        shape = ButtonDefaults
+                            .shape
+                    ) {
+
+                        Text(text = "12:00", color = Color.Black)
+
+                    }
 
                 }
-                Button(onClick = { /*TODO*/ }) {
+                Row(
+                    Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceAround
+                ) {
+                    Button(
+                        onClick = { recordViewModel.appointmentTime.value = 14 }, colors = ButtonDefaults.buttonColors(Color.White),
+                        modifier = Modifier.width(100.dp),
+                        shape = ButtonDefaults
+                            .shape
+                    ) {
 
+                        Text(text = "14:00", color = Color.Black)
+
+                    }
+                    Button(
+                        onClick = { recordViewModel.appointmentTime.value = 16 }, colors = ButtonDefaults.buttonColors(Color.White),
+                        modifier = Modifier.width(100.dp),
+                        shape = ButtonDefaults
+                            .shape
+                    ) {
+
+                        Text(text = "16:00", color = Color.Black)
+
+                    }
                 }
-
             }
-            Row(
-                Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceAround
-            ) {
-                Button(onClick = { /*TODO*/ }) {
-
-                }
-                Button(onClick = { /*TODO*/ }) {
-
-                }
-
-            }
-
 
         }
-
     }
-
 }
 
 
-
 @Composable
-fun HorizontalCalendar(onClick: (Int) -> Unit) {
+fun HorizontalCalendar(onClick: (Int) -> Unit,recordViewModel: RecordViewModel) {
     val currentDate = remember { Calendar.getInstance() }
     val today = currentDate.get(Calendar.DAY_OF_MONTH)
     val currentMonth = currentDate.get(Calendar.MONTH)
@@ -166,7 +196,7 @@ fun HorizontalCalendar(onClick: (Int) -> Unit) {
     val monthName = SimpleDateFormat("MMMM", Locale.getDefault()).format(currentDate.time)
 
     // Получаем количество дней в текущем месяце
-    val daysInMonth = getDaysInMonth(currentMonth, currentYear)
+    val daysInMonth = recordViewModel.getDaysInMonth(currentMonth, currentYear)
 
     // Фильтруем дни, чтобы отображались только те, что не прошли
     val futureDays = daysInMonth.filter { it >= today }
@@ -184,8 +214,6 @@ fun HorizontalCalendar(onClick: (Int) -> Unit) {
             modifier = Modifier.padding(bottom = 8.dp)
         )
 
-        // Дни недели
-        DaysOfWeek()
 
         // Горизонтальная прокрутка дней месяца
         LazyRow(
@@ -197,31 +225,14 @@ fun HorizontalCalendar(onClick: (Int) -> Unit) {
                     day = day,
                     isToday = day == today,
                     isSelected = selectedDate == day,
-                    onClick = { selectedDate = day
-                              onClick(day)}, // Обработчик клика
+                    onClick = {
+                        selectedDate = day
+                        onClick(day)
+                    }, // Обработчик клика
                     month = currentMonth,
                     year = currentYear
                 )
             }
-        }
-    }
-}
-
-@Composable
-fun DaysOfWeek() {
-    val daysOfWeek = listOf("Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс")
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        daysOfWeek.forEach { day ->
-            Text(
-                text = day,
-                style = MaterialTheme.typography.bodyMedium,
-                fontWeight = FontWeight.Bold,
-                color = Color.Gray
-            )
         }
     }
 }
@@ -239,24 +250,23 @@ fun DayItem(
     val calendar = Calendar.getInstance().apply {
         set(year, month, day)
     }
-    val dayOfWeek = SimpleDateFormat("E", Locale.getDefault()).format(calendar.time) // Например "Mon" для понедельника
+    val dayOfWeek = SimpleDateFormat(
+        "E",
+        Locale.getDefault()
+    ).format(calendar.time) // Например "Mon" для понедельника
 
     Box(
         contentAlignment = Alignment.Center,
         modifier = Modifier
             .size(60.dp)
             .padding(4.dp)
-            .border(
-                width = 1.dp,
-                color = MaterialTheme.colorScheme.primary,
-                shape = MaterialTheme.shapes.small
-            )
             .background(
                 when {
-                    isSelected -> Color.Cyan
-                    isToday -> Color.LightGray
+                    isSelected -> main_app_color
+                    isToday -> secondary_app_color
                     else -> Color.Transparent
-                }
+                },
+                shape = CircleShape
             ) // Цвет фона для выделения
             .padding(8.dp)
             .clickable(onClick = onClick) // Обработчик клика по дню
@@ -280,14 +290,6 @@ fun DayItem(
     }
 }
 
-fun getDaysInMonth(month: Int, year: Int): List<Int> {
-    val calendar = Calendar.getInstance()
-    calendar.set(year, month, 1)
 
-    // Получаем количество дней в текущем месяце
-    val daysInMonth = calendar.getActualMaximum(Calendar.DAY_OF_MONTH)
-
-    return (1..daysInMonth).toList()
-}
 
 

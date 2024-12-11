@@ -41,7 +41,7 @@ import com.work.myta.ui.theme.ledger_regular_font
 
 @Composable
 fun RecordScreen(
-    viewModel: RecordViewModel = androidx.lifecycle.viewmodel.compose.viewModel(),
+    viewModel: RecordViewModel ,
     paddingValues: PaddingValues
 ) {
     val user by viewModel.user.collectAsState() // Current user
